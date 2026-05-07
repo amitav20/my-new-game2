@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Base user profile and global currencies",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "coins": { "type": "integer" },
+        "gems": { "type": "integer" },
+        "energy": { "type": "integer" },
+        "maxEnergy": { "type": "integer" },
+        "lastLogin": { "type": "integer" },
+        "dailyRewardClaimed": { "type": "boolean" },
+        "createdAt": { "type": "integer", "format": "timestamp" },
+        "updatedAt": { "type": "integer", "format": "timestamp" }
+      },
+      "required": ["id", "coins", "gems", "energy"]
+    },
+    "Character": {
+      "title": "Character",
+      "description": "The soulbound companion data",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "level": { "type": "integer" },
+        "xp": { "type": "integer" },
+        "xpToNextLevel": { "type": "integer" },
+        "mood": { "type": "string" },
+        "affection": { "type": "integer" },
+        "lastInteraction": { "type": "integer" },
+        "streak": { "type": "integer" },
+        "outfitId": { "type": "string" },
+        "roomLevel": { "type": "integer" },
+        "evolutionStage": { "type": "integer" }
+      },
+      "required": ["name", "level", "xp"]
+    },
+    "QuestProgress": {
+      "title": "QuestProgress",
+      "description": "Progress of a specific quest for a user",
+      "type": "object",
+      "properties": {
+        "questId": { "type": "string" },
+        "isCompleted": { "type": "boolean" },
+        "completedAt": { "type": "integer" }
+      },
+      "required": ["questId", "isCompleted"]
+    },
+    "InventoryItem": {
+      "title": "InventoryItem",
+      "description": "An item owned by the user",
+      "type": "object",
+      "properties": {
+        "itemId": { "type": "string" },
+        "type": { "type": "string" },
+        "name": { "type": "string" },
+        "rarity": { "type": "string" },
+        "acquiredAt": { "type": "integer" }
+      },
+      "required": ["itemId", "name"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Main user documents"
+    },
+    "/users/{userId}/characters/{characterId}": {
+      "schema": "Character",
+      "description": "Character documents belonging to a user"
+    },
+    "/users/{userId}/inventory/{inventoryId}": {
+      "schema": "InventoryItem",
+      "description": "Items in a user's inventory"
+    },
+    "/users/{userId}/quests/{questId}": {
+      "schema": "QuestProgress",
+      "description": "User's progress on quests"
+    }
+  }
+}

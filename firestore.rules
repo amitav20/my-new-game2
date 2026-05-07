@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Blueprints ---
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'coins', 'gems', 'energy', 'maxEnergy']) &&
+             data.keys().size() >= 5 &&
+             data.id == request.auth.uid &&
+             data.coins is int && data.coins >= 0 &&
+             data.gems is int && data.gems >= 0 &&
+             data.energy is int && data.energy >= 0 &&
+             data.energy <= data.maxEnergy;
+    }
+
+    function isValidCharacter(data) {
+      return data.keys().hasAll(['name', 'level', 'xp', 'xpToNextLevel', 'mood', 'affection']) &&
+             data.name is string && data.name.size() <= 64 &&
+             data.level is int && data.level > 0 &&
+             data.xp is int && data.xp >= 0 &&
+             data.affection is int && data.affection >= 0 && data.affection <= 100 &&
+             data.mood in ['happy', 'sad', 'excited', 'tired', 'thoughtful', 'playful'];
+    }
+
+    function isValidQuestProgress(data) {
+      return data.keys().hasAll(['questId', 'isCompleted']) &&
+             data.questId is string &&
+             data.isCompleted is bool;
+    }
+
+    function isValidInventoryItem(data) {
+      return data.keys().hasAll(['itemId', 'name', 'type', 'rarity']) &&
+             data.itemId is string &&
+             data.name is string &&
+             data.rarity in ['common', 'rare', 'epic', 'legendary'];
+    }
+
+    // --- Rules ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming()) && isValidId(userId);
+      allow update: if isOwner(userId) && isValidUser(incoming()) && (
+        // Action: Currency/Energy Update
+        incoming().diff(existing()).affectedKeys().hasOnly(['coins', 'gems', 'energy', 'lastLogin', 'dailyRewardClaimed', 'updatedAt'])
+      );
+
+      match /characters/{characterId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidCharacter(incoming()) && isValidId(characterId) && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isOwner(userId) && isValidCharacter(incoming()) && (
+          // Action: Progression/Mood
+          incoming().diff(existing()).affectedKeys().hasOnly(['level', 'xp', 'xpToNextLevel', 'mood', 'affection', 'lastInteraction', 'streak', 'outfitId', 'evolutionStage'])
+        );
+      }
+
+      match /inventory/{itemId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidInventoryItem(incoming()) && isValidId(itemId);
+      }
+
+      match /quests/{questId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidQuestProgress(incoming()) && isValidId(questId);
+      }
+    }
+  }
+}
