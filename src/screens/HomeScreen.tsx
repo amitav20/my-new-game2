@@ -6,7 +6,7 @@ import { Calendar, CheckCircle2, TrendingUp, Gift } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export const HomeScreen = () => {
-  const { quests, claimDailyReward, dailyRewardClaimed } = useGameStore();
+  const { character, quests, claimDailyReward, dailyRewardClaimed } = useGameStore();
 
   return (
     <div className="min-h-screen pb-32">

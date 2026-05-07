@@ -20,8 +20,21 @@
 
 @layer base {
   body {
-    @apply bg-dark-bg text-slate-100 font-sans overflow-hidden antialiased;
+    @apply bg-dark-bg text-slate-100 font-sans overflow-hidden antialiased select-none;
     background: radial-gradient(circle at 50% 50%, #1A1C2E 0%, #0A0B10 100%);
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Hide scrollbars but allow scrolling */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 

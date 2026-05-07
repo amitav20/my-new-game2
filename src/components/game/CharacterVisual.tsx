@@ -98,7 +98,8 @@ export const CharacterVisual = () => {
           src={`https://api.dicebear.com/7.x/${
             character.type === 'fantasy' ? 'bottts-neutral' : 
             character.type === 'cyber' ? 'identicon' : 
-            character.type === 'beast' ? 'rings' : 'shapes'
+            character.type === 'beast' ? 'rings' : 
+            character.type === 'ghost' ? 'shapes' : 'bottts'
           }/svg?seed=${character.name}&backgroundColor=0f172a,1e293b`} 
           alt="Character"
           className="w-48 h-48 filter drop-shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-transform group-hover:scale-105"

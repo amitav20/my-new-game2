@@ -45,22 +45,23 @@ export default function App() {
     return () => unsubscribe();
   }, [setAuthUser, syncFromFirebase]);
 
+  React.useEffect(() => {
+    if (isAuthReady && !user) {
+      setAuthUser({ uid: 'guest-user', email: 'guest@soulbound.io' } as any);
+    }
+  }, [isAuthReady, user, setAuthUser]);
+
   if (!isAuthReady) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-dark-bg text-white">
         <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <div className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-500">Inscribing Soul...</div>
+        <div className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-500">Initializing Void...</div>
       </div>
     );
   }
 
-  // Guest Mode: Automatically set a placeholder user if none exists to bypass LoginScreen
-  if (!user) {
-    setTimeout(() => {
-      setAuthUser({ uid: 'guest-user', email: 'guest@soulbound.io' } as any);
-    }, 100);
-    return null;
-  }
+  // Guest Mode fallback container
+  if (!user) return null;
 
   if (!character) {
     return (

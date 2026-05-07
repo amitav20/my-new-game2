@@ -3,7 +3,7 @@ export type Mood = 'happy' | 'sad' | 'excited' | 'tired' | 'thoughtful' | 'playf
 export interface Character {
   id: string;
   name: string;
-  type: 'male' | 'female' | 'fantasy' | 'robot' | 'animal';
+  type: 'fantasy' | 'cyber' | 'beast' | 'ghost';
   level: number;
   xp: number;
   xpToNextLevel: number;

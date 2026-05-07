@@ -22,20 +22,26 @@ export const BottomTabs = ({ activeTab, onTabChange }: BottomTabsProps) => {
       <div className="glass-panel border-white/10 rounded-[2.5rem] px-2 py-2 mb-4 shadow-2xl flex justify-around items-center">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
-          const label = tab.id === 'home' ? '🏠' : tab.id === 'world' ? '🛡️' : tab.id === 'story' ? '📜' : tab.id === 'shop' ? '🏪' : '⚙️';
+          const Icon = tab.icon;
           
           return (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "flex flex-col items-center justify-center w-16 h-16 rounded-3xl transition-all duration-300",
-                isActive ? "bg-white/10 text-white" : "text-white/40 hover:bg-white/5"
+                "flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 relative",
+                isActive ? "text-indigo-400" : "text-white/40 hover:bg-white/5"
               )}
             >
-              <span className="text-xl mb-0.5">{label}</span>
+              {isActive && (
+                <motion.div 
+                  layoutId="active-tab-glow"
+                  className="absolute inset-0 bg-indigo-500/10 rounded-2xl blur-md"
+                />
+              )}
+              <Icon className={cn("w-5 h-5 mb-1 relative z-10", isActive && "fill-indigo-400/20")} />
               <span className={cn(
-                "text-[8px] font-black uppercase tracking-widest",
+                "text-[7px] font-black uppercase tracking-[0.2em] relative z-10",
                 isActive ? "opacity-100" : "opacity-40"
               )}>
                 {tab.id}
